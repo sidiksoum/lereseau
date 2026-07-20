@@ -62,17 +62,22 @@ export function PublishFeedModal({ isOpen, onClose, onSuccess }: PublishFeedModa
       formData.append('title', title)
       formData.append('content', content)
       formData.append('mediaType', postType)
+      formData.append('type', postType === 'video' ? 'VIDEO' : 'IMAGE')
 
       if (postType === 'video' && videoUrl.trim()) formData.append('videoUrl', videoUrl.trim())
-      if (postType === 'image' && mediaFile) {
-        formData.append('image', mediaFile)
-      } else if (postType === 'image' && imageUrls.trim()) {
-        formData.append('imageUrls', imageUrls.trim())
+      if (postType === 'image') {
+        if (mediaFile) {
+          formData.append('files', mediaFile)
+        } else if (imageUrls.trim()) {
+          formData.append('imageUrls', imageUrls.trim())
+        }
       }
-      if (postType === 'gallery' && galleryFiles.length > 0) {
-        galleryFiles.forEach((file) => formData.append('galleryImages[]', file))
-      } else if (postType === 'gallery' && imageUrls.trim()) {
-        formData.append('imageUrls', imageUrls.trim())
+      if (postType === 'gallery') {
+        if (galleryFiles.length > 0) {
+          galleryFiles.forEach((file) => formData.append('files', file))
+        } else if (imageUrls.trim()) {
+          formData.append('imageUrls', imageUrls.trim())
+        }
       }
 
       await createPremiumFeed(formData)

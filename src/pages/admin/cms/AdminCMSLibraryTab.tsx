@@ -1,6 +1,5 @@
 import { useState, type FormEvent, useEffect } from 'react'
 import {
-  Upload,
   Loader2,
   Eye,
   Edit,
@@ -75,9 +74,9 @@ export function AdminCMSLibraryTab({ showToast }: { showToast: (msg: string, typ
       if (documentPages) formData.append('pagesCount', documentPages)
       formData.append('format', documentFormat)
       formData.append('author', documentAuthor)
-      if (documentYear) formData.append('publishYear', documentYear)
+      if (documentYear) formData.append('publicationYear', documentYear)
       if (documentPublisher) formData.append('publisher', documentPublisher)
-      if (documentCourse) formData.append('course', documentCourse)
+      if (documentCourse) formData.append('associatedCourse', documentCourse)
       if (documentEdition) formData.append('edition', documentEdition)
       if (documentIsbn) formData.append('isbn', documentIsbn)
       if (documentKeywords) formData.append('tags', documentKeywords)

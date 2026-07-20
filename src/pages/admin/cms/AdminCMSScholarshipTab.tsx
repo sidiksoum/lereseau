@@ -1,6 +1,5 @@
 import { useState, type FormEvent, useEffect } from 'react'
 import {
-  Upload,
   Loader2,
   Eye,
   Edit,
@@ -72,20 +71,20 @@ export function AdminCMSScholarshipTab({ showToast }: { showToast: (msg: string,
       const formData = new FormData()
       formData.append('title', opportunityTitle)
       formData.append('organization', opportunityOrganization)
-      formData.append('category', opportunityCategory)
+      formData.append('domain', opportunityCategory)
       if (opportunityAmount) formData.append('amount', opportunityAmount)
       if (opportunityDeadline) formData.append('deadline', opportunityDeadline)
       if (opportunityFundingSource) formData.append('fundingSource', opportunityFundingSource)
       if (opportunityTargetAudience) formData.append('targetAudience', opportunityTargetAudience)
       if (opportunityDescription) formData.append('description', opportunityDescription)
-      if (opportunityEligibility) formData.append('eligibilityCriteria', opportunityEligibility)
+      if (opportunityEligibility) formData.append('eligibilityRequirements', opportunityEligibility)
       if (opportunityProcess) formData.append('applicationProcess', opportunityProcess)
       if (opportunitySelectionCriteria) formData.append('selectionCriteria', opportunitySelectionCriteria)
       if (opportunityContactEmail) formData.append('contactEmail', opportunityContactEmail)
-      if (opportunityExternalLink) formData.append('externalLink', opportunityExternalLink)
+      if (opportunityExternalLink) formData.append('applyUrl', opportunityExternalLink)
       if (opportunityContactPerson) formData.append('contactPerson', opportunityContactPerson)
       if (opportunityBanner) {
-        formData.append('bannerImage', opportunityBanner)
+        formData.append('bannerImg', opportunityBanner)
       } else if (opportunityBannerUrlString) {
         formData.append('bannerUrlString', opportunityBannerUrlString)
       }

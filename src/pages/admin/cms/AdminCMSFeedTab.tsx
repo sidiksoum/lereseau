@@ -1,9 +1,5 @@
 import { useState, type FormEvent, useEffect } from 'react'
 import {
-  Newspaper,
-  Upload,
-  Send,
-  MessageSquarePlus,
   Video,
   Images,
   Image as ImageIcon,
@@ -70,17 +66,22 @@ export function AdminCMSFeedTab({ showToast }: { showToast: (msg: string, type: 
       formData.append('title', feedTitle)
       formData.append('content', feedContent)
       formData.append('mediaType', postType)
+      formData.append('type', postType === 'video' ? 'VIDEO' : 'IMAGE')
 
       if (postType === 'video' && feedVideoUrl.trim()) formData.append('videoUrl', feedVideoUrl.trim())
-      if (postType === 'image' && feedImage) {
-        formData.append('image', feedImage)
-      } else if (postType === 'image' && feedImageUrls.trim()) {
-        formData.append('imageUrls', feedImageUrls.trim())
+      if (postType === 'image') {
+        if (feedImage) {
+          formData.append('files', feedImage)
+        } else if (feedImageUrls.trim()) {
+          formData.append('imageUrls', feedImageUrls.trim())
+        }
       }
-      if (postType === 'gallery' && feedGalleryFiles.length > 0) {
-        feedGalleryFiles.forEach((file) => formData.append('galleryImages[]', file))
-      } else if (postType === 'gallery' && feedImageUrls.trim()) {
-        formData.append('imageUrls', feedImageUrls.trim())
+      if (postType === 'gallery') {
+        if (feedGalleryFiles.length > 0) {
+          feedGalleryFiles.forEach((file) => formData.append('files', file))
+        } else if (feedImageUrls.trim()) {
+          formData.append('imageUrls', feedImageUrls.trim())
+        }
       }
 
       await createAdminFeedPost(formData)
