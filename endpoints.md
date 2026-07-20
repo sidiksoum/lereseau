@@ -1,0 +1,116 @@
+﻿# Endpoints
+
+- **GET /**: Root
+- **POST /api/auth/register**: Register
+- **POST /api/auth/verify-email**: Verify Email
+- **POST /api/auth/resend-otp**: Resend Otp
+- **POST /api/auth/login**: Login
+- **POST /api/auth/refresh**: Refresh Token
+- **POST /api/auth/logout**: Logout
+- **POST /api/auth/forgot-password**: Forgot Password
+- **POST /api/auth/verify-reset-otp**: Verify Reset Otp
+- **POST /api/auth/reset-password**: Reset Password
+- **GET /api/users/**: List Users
+- **GET /api/users/students**: Get Students
+- **GET /api/users/professionals**: Get Professionals
+- **GET /api/users/institutions**: Get Institutions
+- **GET /api/users/mentors**: Get Mentors
+- **GET /api/users/premium-mentors**: Get Premium Certified Mentors
+- **GET /api/users/me**: Read Current User
+- **PATCH /api/users/me**: Update Current User
+- **POST /api/users/me/experiences**: Create Experience
+- **DELETE /api/users/me/experiences/{id}**: Delete Experience
+- **PATCH /api/users/me/experiences/{id}**: Update Experience
+- **POST /api/users/me/educations**: Create Education
+- **DELETE /api/users/me/educations/{id}**: Delete Education
+- **PATCH /api/users/me/educations/{id}**: Update Education
+- **GET /api/users/{id}**: Read User By Id
+- **POST /api/users/me/certification-request**: Request Certification
+- **POST /api/users/me/premium-request**: Request Premium
+- **GET /api/opportunities/**: List Opportunities
+- **POST /api/opportunities/me/publish**: Publish Opportunity
+- **GET /api/opportunities/{id}**: Get Opportunity
+- **POST /api/checkout/subscription**: Create Subscription Checkout
+- **POST /api/checkout/webhook**: Stripe Webhook
+- **POST /api/network/request/{to_user_id}**: Send Connection Request
+- **PUT /api/network/accept/{connection_id}**: Accept Connection
+- **DELETE /api/network/reject/{connection_id}**: Reject Connection
+- **PUT /api/network/reject/{connection_id}**: Reject Connection
+- **POST /api/network/follow/{institution_id}**: Follow Institution
+- **GET /api/network/**: Get My Network
+- **GET /api/network/outgoing**: Get Outgoing Requests
+- **GET /api/network/incoming**: Get Incoming Requests
+- **GET /api/network/accepted**: Get Accepted Connections
+- **GET /api/network/accepted/professionals**: Get Accepted Professionals
+- **GET /api/network/accepted/mentors**: Get Accepted Mentors
+- **POST /api/documents/pro/publish**: Publish Document
+- **GET /api/documents/**: List Documents
+- **GET /api/documents/{id}**: Get Document
+- **GET /api/forum/channels**: Get Channels
+- **GET /api/forum/channels/{channel_id}/memberships**: Get Channel Memberships
+- **POST /api/forum/channels/{channel_id}/join**: Join Channel
+- **GET /api/forum/channels/{channel_id}/topics**: Get Channel Topics
+- **POST /api/forum/channels/{channel_id}/topics**: Create Topic
+- **GET /api/forum/topics/{topic_id}/replies**: Get Topic Replies
+- **POST /api/forum/topics/{topic_id}/replies**: Create Reply
+- **GET /api/forum/topics/{topic_id}**: Get Topic
+- **POST /api/forum/topics/{topic_id}/view**: View Topic
+- **POST /api/forum/replies/{reply_id}/replies**: Create Nested Reply
+- **POST /api/forum/replies/{reply_id}/like**: Like Reply
+- **POST /api/forum/replies/{reply_id}/report**: Report Reply
+- **POST /api/feed/{post_id}/like**: Toggle Like Post
+- **POST /api/feed/{post_id}/repost**: Repost Feed
+- **POST /api/feed/{post_id}/comments**: Create Comment
+- **GET /api/feed/{post_id}/comments**: Get Comments
+- **GET /api/feed/**: Get Feed
+- **GET /api/chat/**: Get Conversations
+- **POST /api/chat/**: Send Message
+- **GET /api/chat/{conversation_id}/messages**: Get Messages
+- **GET /api/chat/{conversation_id}**: Get Messages
+- **GET /api/notifications/**: Get Notifications
+- **PATCH /api/notifications/{id}/read**: Mark As Read
+- **POST /api/notifications/read-all**: Mark All As Read
+- **POST /api/chatbot/ask**: Ask Chatbot
+- **GET /api/publishing/feed**: Get My Feed Posts
+- **POST /api/publishing/feed**: Publish Feed As User
+- **DELETE /api/publishing/feed/{post_id}**: Delete My Feed Post
+- **GET /api/publishing/documents**: Get My Documents
+- **POST /api/publishing/documents**: Publish Document As User
+- **PUT /api/publishing/documents/{doc_id}**: Update My Document
+- **DELETE /api/publishing/documents/{doc_id}**: Delete My Document
+- **GET /api/admin/users/**: Get All Users
+- **POST /api/admin/users/create**: Create Admin User
+- **PATCH /api/admin/users/{id}/status**: Change User Status
+- **DELETE /api/admin/users/{id}**: Delete User
+- **GET /api/admin/users/stats**: Get User Stats
+- **GET /api/admin/users/certifications/pending**: Get Pending Certifications
+- **PATCH /api/admin/users/certifications/{user_id}/approve**: Approve Certification
+- **PATCH /api/admin/users/certifications/{user_id}/reject**: Reject Certification
+- **GET /api/admin/users/premium/pending**: Get Pending Premium Requests
+- **PATCH /api/admin/users/premium/{user_id}/approve**: Approve Premium
+- **PATCH /api/admin/users/premium/{user_id}/reject**: Reject Premium
+- **GET /api/admin/forum/topics**: Get Pending Topics
+- **GET /api/admin/forum/topics/reported**: Get Reported Topics
+- **GET /api/admin/forum/replies/reported**: Get Reported Replies
+- **GET /api/admin/forum/channels**: Get Channels
+- **POST /api/admin/forum/channels**: Create Channel
+- **PUT /api/admin/forum/channels/{id}**: Update Channel
+- **DELETE /api/admin/forum/channels/{id}**: Delete Channel
+- **DELETE /api/admin/forum/topics/{id}**: Delete Topic
+- **PATCH /api/admin/forum/topics/{id}/authorize**: Authorize Topic
+- **DELETE /api/admin/forum/replies/{id}**: Delete Reply
+- **PATCH /api/admin/forum/replies/{id}/ignore-report**: Ignore Reply Report
+- **POST /api/admin/publishing/feed**: Publish Feed
+- **POST /api/admin/publishing/documents**: Publish Document
+- **POST /api/admin/publishing/opportunities**: Publish Opportunity
+- **PUT /api/admin/publishing/feed/{id}**: Update Feed
+- **DELETE /api/admin/publishing/feed/{id}**: Delete Feed
+- **PUT /api/admin/publishing/documents/{id}**: Update Document
+- **DELETE /api/admin/publishing/documents/{id}**: Delete Document
+- **PUT /api/admin/publishing/opportunities/{id}**: Update Opportunity
+- **DELETE /api/admin/publishing/opportunities/{id}**: Delete Opportunity
+- **GET /api/admin/certifications/**: Get Pending Certifications
+- **PATCH /api/admin/certifications/{id}/certify**: Certify User
+- **PATCH /api/admin/certifications/{id}/premium**: Validate Premium
+- **GET /api/admin/dashboard/stats**: Get Dashboard Stats
+

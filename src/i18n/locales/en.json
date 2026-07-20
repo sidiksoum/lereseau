@@ -1,0 +1,113 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search...",
+    "publish": "Publish",
+    "see_more": "See more",
+    "loading": "Loading...",
+    "public": "Public"
+  },
+  "nav": {
+    "home": "Home",
+    "network": "Network",
+    "docs": "Library",
+    "opportunities": "Opportunities",
+    "mentors": "Mentorship",
+    "forum": "Forum",
+    "settings": "Settings",
+    "search": "Search on LeRéseau...",
+    "login": "Login",
+    "register": "Sign Up",
+    "register_short": "Sign Up",
+    "ai_assistant": "AI Assistant"
+  },
+  "settings": {
+    "title": "Profile Settings",
+    "appearance": "Appearance",
+    "language": "Language",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_system": "System",
+    "profile_tab": "My Profile",
+    "notifications_tab": "Notifications",
+    "security_tab": "Security",
+    "save_success": "Settings saved"
+  },
+  "feed": {
+    "create_post_placeholder": "Share a resource, ask a question...",
+    "create_post_title": "Create a post",
+    "add_to_post": "Add to your post",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "pdf_doc": "PDF Document",
+    "media": "Image / Video",
+    "timeline": "Timeline",
+    "official_badge": "Official"
+  },
+  "profile": {
+    "edit_profile": "Edit Profile",
+    "experiences": "Experiences",
+    "education": "Education",
+    "skills": "Skills",
+    "contact": "Contact",
+    "about": "About",
+    "no_experience": "No experience added.",
+    "add_experience": "Add experience",
+    "job_title": "Job Title",
+    "company": "Company",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "description": "Description"
+  },
+  "network": {
+    "suggestions": "Suggestions",
+    "friends": "My Friends",
+    "mentors": "My Mentors",
+    "relations": "My Connections",
+    "connect": "Connect",
+    "message": "Message",
+    "view_profile": "View Profile",
+    "no_results": "No results found."
+  },
+  "library": {
+    "title": "Premium Library",
+    "subtitle": "Verified documents, theses, and courses.",
+    "buy": "Buy",
+    "download": "Download",
+    "author": "Author",
+    "checkout_title": "Checkout",
+    "payment_methods": "Payment Methods",
+    "order_summary": "Order Summary"
+  },
+  "opportunities": {
+    "scholarships": "Scholarships",
+    "jobs": "Job Offers",
+    "apply": "Apply",
+    "deadline": "Deadline",
+    "requirements": "Requirements"
+  },
+  "forum": {
+    "new_topic": "New Topic",
+    "replies": "Replies",
+    "views": "Views",
+    "channel_general": "General",
+    "channel_career": "Career",
+    "channel_studies": "Studies"
+  },
+  "mentorship": {
+    "find_mentor": "Find your IDEAL Mentor",
+    "match": "Match",
+    "contact_mentor": "Contact",
+    "tags": "Tags"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark_read": "Mark all as read",
+    "empty": "No notifications."
+  }
+}
