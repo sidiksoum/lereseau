@@ -1,4 +1,4 @@
-import type { LoginPayload, LoginResponse, RegisterPayload, User } from '../types/api'
+import type { LoginPayload, LoginResponse, RegisterPayload } from '../types/api'
 import { apiRequest } from './api'
 
 export async function loginRequest(payload: LoginPayload): Promise<LoginResponse> {

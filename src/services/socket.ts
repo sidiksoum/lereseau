@@ -1,7 +1,7 @@
 import { io, type Socket } from 'socket.io-client'
 import { getAccessToken } from './api'
 
-const SOCKET_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
+const SOCKET_URL = (import.meta.env.VITE_API_BASE_URL ?? 'https://lereseau-back-end.onrender.com').replace(/\/+$/, '')
 let socket: Socket | null = null
 
 export function connectSocket(accessToken?: string) {

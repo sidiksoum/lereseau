@@ -1,6 +1,6 @@
 import type { RefreshResponse } from '../types/api'
 
-const BASE_API_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://lereseau-back-end.onrender.com/'
+const BASE_API_URL = (import.meta.env.VITE_API_BASE_URL ?? 'https://lereseau-back-end.onrender.com').replace(/\/+$/, '')
 const ACCESS_TOKEN_KEY = 'lereseau_access_token'
 const REFRESH_TOKEN_KEY = 'lereseau_refresh_token'
 
@@ -31,7 +31,8 @@ interface ApiRequestOptions extends Omit<RequestInit, 'body' | 'headers'> {
 }
 
 export async function apiRequest<T = unknown>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const url = path.startsWith('http') ? path : `${BASE_API_URL}${path}`
+  const cleanPath = path.startsWith('/') ? path : `/${path}`
+  const url = path.startsWith('http') ? path : `${BASE_API_URL}${cleanPath}`
   const headers: Record<string, string> = {
     ...((options.headers || {}) as Record<string, string>),
   }
