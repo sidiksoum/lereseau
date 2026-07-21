@@ -29,7 +29,7 @@ export function Navbar({ isAuthenticated = false }) {
         {isSearchOpen && isAuthenticated && (
           <div className="absolute inset-0 z-10 flex items-center bg-white dark:bg-slate-900 px-3 sm:px-6 animate-in slide-in-from-right-2 fade-in duration-200">
             <button onClick={() => setIsSearchOpen(false)} className="h-10 w-10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
-               <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="flex-1 flex items-center h-10 ml-2 bg-slate-100 dark:bg-slate-800 rounded-full px-4">
               <input autoFocus type="text" placeholder={t('nav.search')} className="w-full bg-transparent border-none outline-none text-[15px] text-slate-900 dark:text-slate-100 placeholder:text-slate-500" />
@@ -38,24 +38,24 @@ export function Navbar({ isAuthenticated = false }) {
         )}
 
         <Link to="/feed" className={`flex items-center hover:opacity-90 transition-opacity flex-shrink-0 ${isSearchOpen ? 'opacity-0 pointer-events-none' : ''}`}>
-          <img 
-            src="/logo.png" 
-            alt="LeRéseau" 
-            className="hidden md:block h-8 md:h-10 w-auto object-contain drop-shadow-sm dark:brightness-110" 
+          <img
+            src="/logo-mobile.png"
+            alt="LeRéseau"
+            className="hidden md:block h-8 md:h-10 w-auto object-contain drop-shadow-sm dark:brightness-110"
           />
-          <img 
-            src="/logo-mobile.png" 
-            alt="LR" 
-            className="block md:hidden h-10 w-10 object-contain rounded-xl shadow-sm" 
+          <img
+            src="/logo-mobile.png"
+            alt="LR"
+            className="block md:hidden h-10 w-10 object-contain rounded-xl shadow-sm"
           />
         </Link>
 
         {/* Barre de recherche style Facebook/LinkedIn (Desktop seulement) */}
         {isAuthenticated && (
-           <div className="hidden md:flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors rounded-full flex-1 max-w-md mx-6">
-              <Search className="w-5 h-5 text-slate-500 dark:text-slate-400 mr-2 shrink-0" />
-              <input type="text" placeholder={t('nav.search')} className="bg-transparent border-none outline-none text-[15px] w-full text-slate-700 dark:text-slate-200 placeholder:text-slate-500 dark:text-slate-400 dark:placeholder:text-slate-400" />
-           </div>
+          <div className="hidden md:flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors rounded-full flex-1 max-w-md mx-6">
+            <Search className="w-5 h-5 text-slate-500 dark:text-slate-400 mr-2 shrink-0" />
+            <input type="text" placeholder={t('nav.search')} className="bg-transparent border-none outline-none text-[15px] w-full text-slate-700 dark:text-slate-200 placeholder:text-slate-500 dark:text-slate-400 dark:placeholder:text-slate-400" />
+          </div>
         )}
 
         {isAuthenticated ? (
