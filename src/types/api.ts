@@ -262,6 +262,8 @@ export interface ChatConversation {
 
 export interface ChatMessage {
   id?: string
+  conversationId?: string
+  senderId?: string
   content?: string | null
   message?: string | null
   text?: string | null
@@ -277,12 +279,8 @@ export interface SendMessagePayload {
 }
 
 export interface SendMessageResponse {
-  message: {
-    senderDetails: ChatParticipant
-  }
-  conversation: {
-    otherParticipants: ChatParticipant[]
-  }
+  message: ChatMessage
+  conversation: ChatConversation
 }
 
 export interface ConversationMessagesResponse {

@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser)
       const token = getAccessToken()
       if (token) {
-        connectSocket(token)
+        connectSocket(token, currentUser.id)
       }
     } catch (originalError) {
       const refreshToken = getRefreshToken()
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = await refreshSession()
         const currentUser = await getCurrentUser()
         setUser(currentUser)
-        connectSocket(token)
+        connectSocket(token, currentUser.id)
       } catch (refreshError) {
         clearTokens()
         setUser(null)
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await loginRequest(payload)
       console.log('[Auth] Login response:', response)
       setTokens(response.access_token, response.refresh_token)
-      connectSocket(response.access_token)
+      connectSocket(response.access_token, response.user?.id)
       
       // Toujours récupérer les infos complètes de l'utilisateur
       console.log('[Auth] Fetching full user profile from /api/users/me')
@@ -82,6 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const currentUser = await getCurrentUser()
         console.log('[Auth] Fetched full current user:', currentUser)
         setUser(currentUser)
+        // Ensure connected with fully loaded user info
+        connectSocket(response.access_token, currentUser.id)
         return currentUser
       } catch (userErr) {
         console.error('[Auth] Could not fetch full current user, falling back to login response:', userErr)

@@ -93,6 +93,13 @@ export function FeedPage() {
       try {
         const posts = await getFeedPosts()
         setFeedPosts(posts)
+        
+        // Initialiser l'état des likes à partir du serveur
+        const initialLikes: Record<string, boolean> = {}
+        posts.forEach(post => {
+          initialLikes[post.id] = (post as any).liked ?? false
+        })
+        setLikedPosts(initialLikes)
       } catch (error) {
         setFeedError(error instanceof Error ? error.message : 'Impossible de récupérer le fil.')
       } finally {

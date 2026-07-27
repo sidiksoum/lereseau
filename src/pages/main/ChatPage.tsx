@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext"
 import { getConversations, sendMessage, getConversationMessages } from "../../services/chat"
 import { getAcceptedConnections } from "../../services/network"
 import { getPremiumMentors } from "../../services/user"
+import { getSocket } from "../../services/socket"
 import type { ChatConversation, ChatMessage, SendMessagePayload, User as UserType } from "../../types/api"
 
 export function ChatPage() {
@@ -82,6 +83,65 @@ export function ChatPage() {
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showEmojiPicker])
+
+  // Écouter les messages en temps réel via Socket.IO
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+
+    const handleNewMessage = (data: { conversationId: string; message: string; senderId: string }) => {
+      console.log('📨 [Socket.IO] Nouveau message reçu :', data)
+      
+      // 1. Mettre à jour la liste des conversations (dernier message, badge non lu)
+      setConversations((prevConvs) => {
+        const index = prevConvs.findIndex(c => c.id === data.conversationId)
+        let updatedConvs = [...prevConvs]
+        
+        if (index !== -1) {
+          const conv = { ...prevConvs[index] }
+          conv.lastMessageText = data.message
+          conv.lastMessageAt = new Date().toISOString()
+          
+          // Incrémenter le compteur non lu si la conversation n'est pas celle actuellement ouverte
+          if (!selectedConversation || selectedConversation.id !== data.conversationId) {
+            conv.myUnreadCount = (conv.myUnreadCount || 0) + 1
+          }
+          
+          updatedConvs[index] = conv
+          // Placer au sommet
+          updatedConvs = [conv, ...updatedConvs.filter(c => c.id !== data.conversationId)]
+        } else {
+          // Si la conversation n'existe pas encore dans la liste, on la recharge entièrement
+          loadConversationsAndFriends()
+        }
+        return updatedConvs
+      })
+
+      // 2. Si c'est la conversation ouverte actuelle, ajouter le message en temps réel
+      if (selectedConversation && selectedConversation.id === data.conversationId) {
+        const otherParticipant = selectedConversation.otherParticipants[0]
+        const newMessageObj: ChatMessage = {
+          id: `msg-${Date.now()}`,
+          conversationId: data.conversationId,
+          senderId: data.senderId,
+          content: data.message,
+          createdAt: new Date().toISOString(),
+          senderDetails: {
+            id: otherParticipant.id,
+            firstName: otherParticipant.firstName,
+            lastName: otherParticipant.lastName,
+            avatarUrl: otherParticipant.avatarUrl
+          }
+        }
+        setMessages((prevMessages) => [...prevMessages, newMessageObj])
+      }
+    }
+
+    socket.on('new_message', handleNewMessage)
+    return () => {
+      socket.off('new_message', handleNewMessage)
+    }
+  }, [selectedConversation, currentUser])
 
 
   const sortConversationsByActivity = (convs: ChatConversation[]) => {
@@ -188,34 +248,38 @@ export function ChatPage() {
     if (!newMessage.trim() || !selectedConversation || sending) return
 
     setSending(true)
+    const originalMessage = newMessage.trim()
     try {
       const payload: SendMessagePayload = {
-        content: newMessage.trim(),
+        content: originalMessage,
         recipientId: selectedConversation.otherParticipants[0].id
       }
 
-      await sendMessage(payload)
+      const res = await sendMessage(payload)
       setNewMessage("")
 
-      const updatedConversations = await loadConversationsAndFriends()
-      let activeConversation = selectedConversation
-      const matchedConversation = findUpdatedConversation(updatedConversations, selectedConversation)
-      if (matchedConversation) {
-        activeConversation = matchedConversation
-        setSelectedConversation(matchedConversation)
+      // Ajouter le message envoyé instantanément à l'état local
+      if (res && res.message) {
+        const sentMessage = {
+          ...res.message,
+          senderDetails: {
+            id: currentUser?.id || '',
+            firstName: currentUser?.firstName || '',
+            lastName: currentUser?.lastName || '',
+            avatarUrl: currentUser?.avatarUrl || ''
+          }
+        }
+        setMessages((prev) => [...prev, sentMessage])
       }
 
-      const response = await getConversationMessages(activeConversation.id)
-      const fallbackText = response.conversation?.lastMessageText ?? activeConversation.lastMessageText ?? null
-      const sortedMessages = normalizeMessages(response.messages, fallbackText).sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
-        return dateA - dateB
-      })
-      setMessages(sortedMessages)
-      setSelectedConversation(response.conversation)
-
-      setConversations((prevConversations) => ensureConversationIsTop(prevConversations, response.conversation.id))
+      // Mettre à jour l'ordre et le contenu de la conversation dans le menu latéral
+      if (res && res.conversation) {
+        setConversations((prevConvs) => {
+          const filtered = prevConvs.filter(c => c.id !== selectedConversation.id && c.id !== res.conversation.id)
+          return [res.conversation, ...filtered]
+        })
+        setSelectedConversation(res.conversation)
+      }
     } catch (error) {
       console.error('Erreur lors de l\'envoi du message:', error)
     } finally {

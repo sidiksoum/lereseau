@@ -3,13 +3,21 @@ import { getAccessToken } from './api'
 
 const SOCKET_URL = (import.meta.env.VITE_API_BASE_URL ?? 'https://lereseau-back-end.onrender.com').replace(/\/+$/, '')
 let socket: Socket | null = null
+let currentUserId: string | null = null
 
-export function connectSocket(accessToken?: string) {
+export function connectSocket(accessToken?: string, userId?: string) {
+  if (userId) {
+    currentUserId = userId
+  }
+
   if (socket && socket.connected) {
+    if (currentUserId) {
+      socket.emit('join_user_room', { userId: currentUserId })
+    }
     return socket
   }
 
-  socket = io(SOCKET_URL, {
+  const s = io(SOCKET_URL, {
     transports: ['websocket'],
     auth: {
       token: accessToken ?? getAccessToken() ?? undefined,
@@ -18,11 +26,17 @@ export function connectSocket(accessToken?: string) {
     autoConnect: true,
   })
 
-  socket.on('connect', () => {
-    console.log('[Socket.IO] connected', socket?.id)
+  socket = s
+
+  s.on('connect', () => {
+    console.log('[Socket.IO] connected', s.id)
+    if (currentUserId) {
+      console.log('[Socket.IO] Emitting join_user_room for', currentUserId)
+      s.emit('join_user_room', { userId: currentUserId })
+    }
   })
 
-  socket.on('connect_error', (error) => {
+  s.on('connect_error', (error) => {
     console.warn('[Socket.IO] connect_error', error)
   })
 

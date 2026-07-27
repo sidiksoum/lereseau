@@ -18,6 +18,17 @@ export function ForumPage() {
   const [replyContent, setReplyContent] = useState("")
   const [loading, setLoading] = useState(false)
   const [loadingReplies, setLoadingReplies] = useState(false)
+  const [likedReplies, setLikedReplies] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('liked_replies') || '[]')
+    } catch {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('liked_replies', JSON.stringify(likedReplies))
+  }, [likedReplies])
 
   // Dialog de confirmation
   const [confirmationDialog, setConfirmationDialog] = useState<{
@@ -138,28 +149,40 @@ export function ForumPage() {
   }
 
   const handleLikeReply = async (replyId: string) => {
-    // Mise à jour optimiste : modifier l'état local immédiatement
+    const isAlreadyLiked = likedReplies.includes(replyId)
+    
+    // Mise à jour optimiste
     setReplies(prevReplies =>
       prevReplies.map(reply =>
         reply.id === replyId
-          ? { ...reply, likesCount: reply.likesCount + 1 }
+          ? { ...reply, likesCount: isAlreadyLiked ? Math.max(0, reply.likesCount - 1) : reply.likesCount + 1 }
           : reply
       )
     )
 
+    if (isAlreadyLiked) {
+      setLikedReplies(prev => prev.filter(id => id !== replyId))
+    } else {
+      setLikedReplies(prev => [...prev, replyId])
+    }
+
     try {
       await likeReply(replyId)
-      // Le like a réussi, l'état local est déjà mis à jour
     } catch (error) {
       console.error('Erreur lors du like:', error)
-      // En cas d'erreur, annuler la mise à jour optimiste
+      // Annuler la mise à jour optimiste en cas d'erreur
       setReplies(prevReplies =>
         prevReplies.map(reply =>
           reply.id === replyId
-            ? { ...reply, likesCount: reply.likesCount - 1 }
+            ? { ...reply, likesCount: isAlreadyLiked ? reply.likesCount + 1 : Math.max(0, reply.likesCount - 1) }
             : reply
         )
       )
+      if (isAlreadyLiked) {
+        setLikedReplies(prev => [...prev, replyId])
+      } else {
+        setLikedReplies(prev => prev.filter(id => id !== replyId))
+      }
     }
   }
 
@@ -468,9 +491,11 @@ export function ForumPage() {
                       <div className="flex items-center gap-2 mt-2 ml-11">
                         <button
                           onClick={() => handleLikeReply(reply.id)}
-                          className="flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-red-600 transition-colors"
+                          className={`flex items-center gap-1 text-xs font-medium transition-colors ${
+                            likedReplies.includes(reply.id) ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-red-600'
+                          }`}
                         >
-                          <Heart className="h-3.5 w-3.5" /> {reply.likesCount || 0}
+                          <Heart className={`h-3.5 w-3.5 ${likedReplies.includes(reply.id) ? 'fill-current text-red-600 dark:text-red-400' : ''}`} /> {reply.likesCount || 0}
                         </button>
                         <button
                           onClick={() => handleReportReply(reply.id)}

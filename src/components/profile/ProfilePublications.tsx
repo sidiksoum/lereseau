@@ -38,6 +38,13 @@ export function ProfilePublications() {
       if (activeTab === 'feed') {
         const data = await getPremiumFeeds()
         setFeeds(data)
+        
+        // Initialiser l'état des likes à partir du serveur
+        const initialLikes: Record<string, boolean> = {}
+        data.forEach(post => {
+          initialLikes[post.id] = (post as any).liked ?? false
+        })
+        setLikedPosts(initialLikes)
       } else {
         const data = await getPremiumDocuments()
         setDocuments(data)
