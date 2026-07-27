@@ -262,6 +262,7 @@ export function ChatPage() {
       if (res && res.message) {
         const sentMessage = {
           ...res.message,
+          content: res.message.content || res.message.message || originalMessage,
           senderDetails: {
             id: currentUser?.id || '',
             firstName: currentUser?.firstName || '',
