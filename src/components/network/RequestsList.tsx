@@ -47,7 +47,7 @@ export function RequestsList() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {Array.from({ length: 3 }).map((_, index) => (
           <div key={index} className="h-72 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
         ))}
@@ -66,7 +66,7 @@ export function RequestsList() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {requests.map((request) => {
         const requester = request.requesterDetails
         const name = [requester.firstName, requester.lastName].filter(Boolean).join(' ') || requester.email || 'Membre'

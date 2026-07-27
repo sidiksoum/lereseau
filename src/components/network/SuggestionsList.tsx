@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { UserPlus, MapPin, Briefcase } from 'lucide-react'
+import { UserPlus, UserCheck, MapPin, Briefcase } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { getUsers, sendConnectionRequest, getOutgoingRequests } from '../../services/network'
 import type { User } from '../../types/api'
@@ -12,7 +12,7 @@ export function SuggestionsList() {
   const [suggestions, setSuggestions] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [requestingIds, setRequestingIds] = useState<string[]>([])
-  const [sentRequestIds, setSentRequestIds] = useState<string[]>([])
+  const [sentRequestsStatus, setSentRequestsStatus] = useState<Record<string, string>>({})
 
   useEffect(() => {
     const loadSuggestions = async () => {
@@ -23,12 +23,17 @@ export function SuggestionsList() {
         const filtered = users.filter((candidate) => candidate.id !== currentUser?.id)
         setSuggestions(filtered)
 
-        // Charger les demandes de connexion sortantes pour marquer "Demande envoyée"
+        // Charger les demandes de connexion sortantes pour marquer leur statut exact
         const outgoingRequests = await getOutgoingRequests()
         console.log('📤 Demandes sortantes:', outgoingRequests)
-        const sentIds = outgoingRequests.map((req) => req.addresseeId)
-        console.log('📤 IDs des demandes envoyées:', sentIds)
-        setSentRequestIds(sentIds)
+        const statusMap: Record<string, string> = {}
+        outgoingRequests.forEach((req) => {
+          if (req.addresseeId) {
+            statusMap[req.addresseeId] = req.status || 'PENDING'
+          }
+        })
+        console.log('📤 Statuts des demandes envoyées:', statusMap)
+        setSentRequestsStatus(statusMap)
       } catch (error) {
         console.error('Erreur lors du chargement des suggestions de réseau', error)
       } finally {
@@ -42,7 +47,7 @@ export function SuggestionsList() {
   }, [currentUser?.id])
 
   const handleConnect = async (suggestion: User) => {
-    if (requestingIds.includes(suggestion.id) || sentRequestIds.includes(suggestion.id)) {
+    if (requestingIds.includes(suggestion.id) || sentRequestsStatus[suggestion.id]) {
       return
     }
 
@@ -50,7 +55,7 @@ export function SuggestionsList() {
     setRequestingIds((current) => [...current, suggestion.id])
     try {
       await sendConnectionRequest(suggestion.id, requestType)
-      setSentRequestIds((current) => [...current, suggestion.id])
+      setSentRequestsStatus((current) => ({ ...current, [suggestion.id]: 'PENDING' }))
     } catch (error) {
       console.error('Erreur lors de l’envoi de la demande de connexion', error)
     } finally {
@@ -60,7 +65,7 @@ export function SuggestionsList() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="h-72 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
         ))}
@@ -77,14 +82,18 @@ export function SuggestionsList() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {suggestions.map((suggestion) => {
         const name = getDisplayName(suggestion)
         const title = getProfileTitle(suggestion)
         const meta = getProfileMeta(suggestion)
-        const isRequested = sentRequestIds.includes(suggestion.id)
+        const requestStatus = sentRequestsStatus[suggestion.id] // undefined, 'PENDING', or 'ACCEPTED'
+        const isRequested = !!requestStatus
         const isLoading = requestingIds.includes(suggestion.id)
         const avatarUrl = suggestion.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=cbd5e1&color=64748b`
+
+        const workInfo = suggestion.workDomain || suggestion.institutionDetails || 'Aucune info'
+        const truncatedWorkInfo = workInfo.length > 25 ? `${workInfo.slice(0, 25)}...` : workInfo
 
         return (
           <div
@@ -110,7 +119,7 @@ export function SuggestionsList() {
             <div className="w-full flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 mb-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 py-2 rounded-lg relative z-10">
               <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-slate-400" /> {suggestion.location || 'Localisation indisponible'}</div>
               <div className="w-px h-4 bg-slate-200" />
-              <div className="flex items-center gap-1.5"><Briefcase className="h-3.5 w-3.5 text-slate-400" /> {suggestion.workDomain || suggestion.institutionDetails || 'Aucune info'}</div>
+              <div className="flex items-center gap-1.5"><Briefcase className="h-3.5 w-3.5 text-slate-400" /> {truncatedWorkInfo}</div>
             </div>
 
             <div className="w-full relative z-10">
@@ -121,9 +130,27 @@ export function SuggestionsList() {
                   handleConnect(suggestion)
                 }}
                 disabled={isRequested || isLoading}
-                className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors ${isRequested ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'} ${isLoading ? 'opacity-70 cursor-wait' : ''}`}
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-colors ${
+                  requestStatus === 'ACCEPTED'
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                    : isRequested
+                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                } ${isLoading ? 'opacity-70 cursor-wait' : ''}`}
               >
-                <UserPlus className="h-4 w-4" /> {isRequested ? 'Demande envoyée' : isLoading ? 'Envoi...' : 'Se connecter'}
+                {requestStatus === 'ACCEPTED' ? (
+                  <>
+                    <UserCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Ami(e)
+                  </>
+                ) : isRequested ? (
+                  <>
+                    <UserPlus className="h-4 w-4 text-amber-600 dark:text-amber-400" /> Demande envoyée
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4" /> {isLoading ? 'Envoi...' : 'Se connecter'}
+                  </>
+                )}
               </button>
             </div>
           </div>

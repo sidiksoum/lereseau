@@ -1,5 +1,29 @@
 import { Briefcase, Calendar, GraduationCap, Check, AlertCircle, Sparkles, Award, ShieldCheck } from "lucide-react"
 
+function formatDate(dateStr?: string): string {
+  if (!dateStr) return '';
+  try {
+    if (!/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+      return dateStr;
+    }
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return dateStr;
+    }
+    const formatted = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(date);
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  } catch (e) {
+    return dateStr;
+  }
+}
+
+function formatDateRange(startDateStr?: string, endDateStr?: string): string {
+  const start = formatDate(startDateStr);
+  const end = endDateStr ? formatDate(endDateStr) : "Présent";
+  if (!start) return end;
+  return `${start} - ${end}`;
+}
+
 export function ProfessionalProfile({
   profile,
   flashMessage,
@@ -33,7 +57,7 @@ export function ProfessionalProfile({
                 <div className="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex-1 shadow-sm hover:shadow-md transition-shadow">
                   <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">{exp.title}</h3>
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">{exp.company}</p>
-                  <p className="text-xs text-slate-400 font-medium flex items-center gap-1 mb-3"><Calendar className="w-3 h-3" /> {exp.startDate} - {exp.endDate}</p>
+                  <p className="text-xs text-slate-400 font-medium flex items-center gap-1 mb-3"><Calendar className="w-3 h-3" /> {formatDateRange(exp.startDate, exp.endDate)}</p>
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{exp.description}</p>
                 </div>
               </div>
@@ -56,7 +80,7 @@ export function ProfessionalProfile({
                 <div className="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 flex-1 shadow-sm hover:shadow-md transition-shadow">
                   <h3 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">{edu.school}</h3>
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">{edu.degree}</p>
-                  <p className="text-xs text-slate-400 font-medium flex items-center gap-1 mb-2"><Calendar className="w-3 h-3" /> {edu.startDate} - {edu.endDate}</p>
+                  <p className="text-xs text-slate-400 font-medium flex items-center gap-1 mb-2"><Calendar className="w-3 h-3" /> {formatDateRange(edu.startDate, edu.endDate)}</p>
                   {edu.description && <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{edu.description}</p>}
                 </div>
               </div>

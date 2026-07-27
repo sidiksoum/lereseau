@@ -42,7 +42,7 @@ export function InstitutionsList() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="h-72 rounded-3xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
         ))}
@@ -59,12 +59,13 @@ export function InstitutionsList() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {institutions.map((institution) => {
         const name = getDisplayName(institution)
         const title = getProfileTitle(institution)
         const avatarUrl = institution.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=cbd5e1&color=64748b`
         const description = institution.institutionDetails || institution.about || 'Aucune description disponible.'
+        const displayDescription = description.length > 130 ? `${description.slice(0, 130)}...` : description
         const location = institution.location || 'Localisation indisponible'
         const followers = institution.points ? `${institution.points} abonnés` : 'Suivi disponible'
         const isFollowing = followingIds.includes(institution.id)
@@ -85,7 +86,7 @@ export function InstitutionsList() {
                   </div>
                 </div>
 
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 mb-3 line-clamp-2 md:line-clamp-3">{description}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 mb-3 line-clamp-2 md:line-clamp-3">{displayDescription}</p>
 
                 <div className="flex items-center gap-4 text-xs font-medium text-slate-500 dark:text-slate-400 mb-5">
                   <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {location}</span>
