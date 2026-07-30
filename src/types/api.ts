@@ -27,6 +27,7 @@ export interface User {
   firstName?: string
   lastName?: string
   phone?: string
+  matchScore?: number
   role?: Role
   roleType?: RoleType
   avatarUrl?: string
@@ -161,6 +162,8 @@ export interface FeedPost {
   likesCount: number
   commentsCount: number
   viewCount?: number
+  liked?: boolean
+  recommendationScore?: number
   createdAt: string
 }
 

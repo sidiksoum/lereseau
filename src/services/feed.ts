@@ -1,8 +1,22 @@
 import { apiRequest } from './api'
 import type { FeedComment, FeedPost, ToggleLikeResponse } from '../types/api'
 
-export async function getFeedPosts(): Promise<FeedPost[]> {
-  return apiRequest('/api/feed/', {
+interface FeedListParams {
+  q?: string
+  type?: string
+  limit?: number
+  cursor?: string
+}
+
+export async function getFeedPosts(params?: FeedListParams): Promise<FeedPost[]> {
+  const query = new URLSearchParams()
+  if (params?.q) query.set('q', params.q)
+  if (params?.type) query.set('type', params.type)
+  if (params?.limit) query.set('limit', String(params.limit))
+  if (params?.cursor) query.set('cursor', params.cursor)
+
+  const suffix = query.toString() ? `?${query.toString()}` : ''
+  return apiRequest(`/api/feed/${suffix}`, {
     method: 'GET',
     auth: true,
   })

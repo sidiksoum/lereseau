@@ -19,8 +19,20 @@ export async function getIncomingRequests(): Promise<IncomingRequest[]> {
   })
 }
 
-export async function getUsers(): Promise<User[]> {
-  return apiRequest<User[]>('/api/users/', {
+export async function getUsers(params?: { q?: string; limit?: number }): Promise<User[]> {
+  const query = new URLSearchParams()
+  if (params?.q) query.set('q', params.q)
+  if (params?.limit) query.set('limit', String(params.limit))
+
+  const suffix = query.toString() ? `?${query.toString()}` : ''
+  return apiRequest<User[]>(`/api/users/${suffix}`, {
+    method: 'GET',
+    auth: true,
+  })
+}
+
+export async function getSmartSuggestions(limit = 12): Promise<User[]> {
+  return apiRequest<User[]>(`/api/network/suggestions?limit=${limit}`, {
     method: 'GET',
     auth: true,
   })

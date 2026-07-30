@@ -13,8 +13,10 @@ export function OpportunitiesPage() {
 
   useEffect(() => {
     const fetchOpportunities = async () => {
+      setLoading(true)
+      setError(null)
       try {
-        const data = await getOpportunities()
+        const data = await getOpportunities({ q: searchQuery.trim() || undefined })
         setOpportunities(data)
       } catch (err) {
         setError('Erreur lors du chargement des opportunités')
@@ -25,7 +27,7 @@ export function OpportunitiesPage() {
     }
 
     fetchOpportunities()
-  }, [])
+  }, [searchQuery])
 
   const getOppImageUrl = (opp: Opportunity) => {
     if (opp.imageUrl || opp.bannerUrl) return opp.imageUrl || opp.bannerUrl;

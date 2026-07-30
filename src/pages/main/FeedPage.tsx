@@ -91,7 +91,7 @@ export function FeedPage() {
       setLoadingFeed(true)
       setFeedError(null)
       try {
-        const posts = await getFeedPosts()
+        const posts = await getFeedPosts({ limit: 20 })
         setFeedPosts(posts)
         
         // Initialiser l'état des likes à partir du serveur

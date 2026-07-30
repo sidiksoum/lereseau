@@ -14,8 +14,13 @@ export function LibraryPage() {
 
   useEffect(() => {
     const fetchDocuments = async () => {
+      setLoading(true)
+      setError(null)
       try {
-        const data = await getDocuments()
+        const data = await getDocuments({
+          q: searchQuery.trim() || undefined,
+          category: activeCategory === 'Tout' ? undefined : activeCategory,
+        })
         setDocuments(data)
       } catch (err) {
         setError('Erreur lors du chargement des documents')
@@ -26,7 +31,7 @@ export function LibraryPage() {
     }
 
     fetchDocuments()
-  }, [])
+  }, [searchQuery, activeCategory])
 
   const filteredDocs = documents.filter(doc =>
     doc.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserPlus, UserCheck, MapPin, Briefcase } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
-import { getUsers, sendConnectionRequest, getOutgoingRequests } from '../../services/network'
+import { getSmartSuggestions, sendConnectionRequest, getOutgoingRequests } from '../../services/network'
 import type { User } from '../../types/api'
 import { getDisplayName, getProfileMeta, getProfileTitle, getConnectionRequestType } from './networkHelpers'
 
@@ -18,8 +18,8 @@ export function SuggestionsList() {
     const loadSuggestions = async () => {
       setLoading(true)
       try {
-        // Charger les utilisateurs suggérés
-        const users = await getUsers()
+        // Charger les utilisateurs suggérés via l’endpoint optimisé
+        const users = await getSmartSuggestions(12)
         const filtered = users.filter((candidate) => candidate.id !== currentUser?.id)
         setSuggestions(filtered)
 
