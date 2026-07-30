@@ -20,7 +20,14 @@ export function FriendsList() {
         const users = connections
           .map((connection) => connection.targetUser)
           .filter((user): user is User => Boolean(user))
-        setFriends(users)
+          // Exclure les institutions (suivis ne doivent pas apparaître comme amis)
+          .filter((u) => u.roleType !== 'institution')
+        // Dédupliquer par id
+        const uniqueMap = new Map<string, User>()
+        users.forEach(u => {
+          if (!uniqueMap.has(u.id)) uniqueMap.set(u.id, u)
+        })
+        setFriends(Array.from(uniqueMap.values()))
       } catch (error) {
         console.error('Erreur lors du chargement des amis', error)
       } finally {

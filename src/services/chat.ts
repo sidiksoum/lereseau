@@ -21,8 +21,17 @@ export async function sendMessage(payload: SendMessagePayload): Promise<SendMess
   })
 }
 
-export async function getConversationMessages(conversationId: string): Promise<ConversationMessagesResponse> {
-  return apiRequest<ConversationMessagesResponse>(`/api/chat/${conversationId}/messages`, {
+interface ConversationMessagesParams {
+  limit?: number
+  cursor?: string
+}
+
+export async function getConversationMessages(conversationId: string, params?: ConversationMessagesParams): Promise<ConversationMessagesResponse> {
+  const qs = new URLSearchParams()
+  if (params?.limit) qs.set('limit', String(params.limit))
+  if (params?.cursor) qs.set('cursor', params.cursor)
+  const suffix = qs.toString() ? `?${qs.toString()}` : ''
+  return apiRequest<ConversationMessagesResponse>(`/api/chat/${conversationId}/messages${suffix}`, {
     method: 'GET',
     auth: true,
   })

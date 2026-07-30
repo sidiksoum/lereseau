@@ -17,12 +17,16 @@ export function ChatPage() {
   const [mentors, setMentors] = useState<UserType[]>([])
   const [selectedConversation, setSelectedConversation] = useState<ChatConversation | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [messagesCursor, setMessagesCursor] = useState<string | null>(null)
+  const [messagesHasMore, setMessagesHasMore] = useState<boolean>(false)
+  const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [newMessage, setNewMessage] = useState("")
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const emojiPickerRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   // Charger les conversations et amis au montage
   useEffect(() => {
@@ -69,6 +73,41 @@ export function ChatPage() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Charger plus d'historique lorsque l'utilisateur fait défiler vers le haut
+  const loadMoreMessages = async () => {
+    if (!selectedConversation || !messagesHasMore || loadingMore) return
+    setLoadingMore(true)
+    try {
+      const cursor = messagesCursor ?? undefined
+      const response = await getConversationMessages(selectedConversation.id, { limit: 50, cursor })
+      const fallbackText = response.conversation?.lastMessageText ?? selectedConversation.lastMessageText ?? null
+      const newMessages = normalizeMessages(response.messages, fallbackText).sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return dateA - dateB
+      })
+      setMessages((prev) => [...newMessages, ...prev])
+      setMessagesCursor(response.cursor ?? (newMessages[0]?.createdAt ?? null))
+      setMessagesHasMore(Boolean(response.hasMore))
+    } catch (err) {
+      console.error('Erreur lors du chargement des anciens messages:', err)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  useEffect(() => {
+    const el = messagesContainerRef.current
+    if (!el) return
+    const onScroll = () => {
+      if (el.scrollTop < 120) {
+        loadMoreMessages()
+      }
+    }
+    el.addEventListener('scroll', onScroll)
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [messagesContainerRef.current, selectedConversation, messagesCursor, messagesHasMore, loadingMore])
 
   // Fermer le sélecteur d'emojis au clic en dehors
   useEffect(() => {
@@ -229,16 +268,20 @@ export function ChatPage() {
     }
 
     try {
-      const response = await getConversationMessages(conversation.id)
+      // Récupérer les messages récents en pagination (50 par page)
+      const response = await getConversationMessages(conversation.id, { limit: 50 })
       const fallbackText = response.conversation?.lastMessageText ?? conversation.lastMessageText ?? null
-      // Trier les messages par date (du plus ancien au plus récent)
       const sortedMessages = normalizeMessages(response.messages, fallbackText).sort((a, b) => {
         const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
         return dateA - dateB
       })
       setMessages(sortedMessages)
+      // Le curseur représente l'ancienneté (createdAt du premier élément retourné)
+      setMessagesCursor(response.cursor ?? (sortedMessages[0]?.createdAt ?? null))
+      setMessagesHasMore(Boolean(response.hasMore))
       setSelectedConversation(response.conversation)
+      setTimeout(() => scrollToBottom(), 50)
     } catch (error) {
       console.error('Erreur lors du chargement des messages:', error)
     }
@@ -499,7 +542,7 @@ export function ChatPage() {
             </div>
 
             {/* Historique des messages */}
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
               {messages.length === 0 ? (
                 <div className="text-center text-slate-400 font-medium my-8">
                   Aucun message dans cette conversation

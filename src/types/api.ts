@@ -289,4 +289,6 @@ export interface SendMessageResponse {
 export interface ConversationMessagesResponse {
   conversation: ChatConversation
   messages: ChatMessage[]
+  cursor?: string
+  hasMore?: boolean
 }

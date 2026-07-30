@@ -17,6 +17,11 @@ export function InstitutionsList() {
       try {
         const results = await getInstitutions()
         setInstitutions(results)
+        // Détecter les institutions déjà suivies si le backend fournit un flag
+        const followedIds: string[] = results
+          .filter((inst: any) => inst && (inst.isFollowing || inst.isFollowed || inst.followedByMe || inst.iFollow))
+          .map((inst: any) => inst.id)
+        if (followedIds.length > 0) setFollowingIds(followedIds)
       } catch (error) {
         console.error('Erreur lors du chargement des institutions', error)
       } finally {
