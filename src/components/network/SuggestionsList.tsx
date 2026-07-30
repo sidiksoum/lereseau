@@ -20,8 +20,11 @@ export function SuggestionsList() {
       try {
         // Charger les utilisateurs suggérés via l’endpoint optimisé
         const users = await getSmartSuggestions(12)
-        // Exclure l'utilisateur courant et les administrateurs du flux de suggestions
-        const filtered = users.filter((candidate) => candidate.id !== currentUser?.id && candidate.roleType !== 'admin')
+        // Exclure l'utilisateur courant et tout profil dont le rôle est incompatible avec le flux de suggestions
+        const filtered = users.filter((candidate) => {
+          const roleType = candidate.roleType?.toLowerCase()
+          return candidate.id !== currentUser?.id && roleType !== 'admin' && roleType !== 'super_admin' && roleType !== 'superadmin'
+        })
         setSuggestions(filtered)
 
         // Charger les demandes de connexion sortantes pour marquer leur statut exact
