@@ -6,11 +6,70 @@ import { clearTokens, getAccessToken, getRefreshToken, refreshTokenRequest, setT
 import { createUserEducation, createUserExperience, getCurrentUser, updateCurrentUser } from '../services/user'
 import { connectSocket, disconnectSocket } from '../services/socket'
 import { AuthContext } from './AuthContext'
+import { getNotifications } from '../services/notifications'
+import { getConversations } from '../services/chat'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0)
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
+
+  const fetchInitialCounts = async () => {
+    try {
+      const notifications = await getNotifications()
+      const unreadNotifs = notifications.filter(n => !n.isRead).length
+      setUnreadNotificationsCount(unreadNotifs)
+
+      const conversations = await getConversations()
+      const unreadMsgs = conversations.reduce((acc, c) => acc + (c.myUnreadCount || 0), 0)
+      setUnreadMessagesCount(unreadMsgs)
+    } catch (err) {
+      console.warn("Failed to load initial counts:", err)
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+      fetchInitialCounts()
+    } else {
+      setUnreadNotificationsCount(0)
+      setUnreadMessagesCount(0)
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (!user) return
+
+    const socket = connectSocket(getAccessToken() || undefined, user.id)
+    if (!socket) return
+
+    const handleNewMessage = () => {
+      setUnreadMessagesCount(prev => prev + 1)
+    }
+
+    const handleNewNotification = () => {
+      setUnreadNotificationsCount(prev => prev + 1)
+    }
+
+    socket.on('new_message', handleNewMessage)
+    socket.on('new_notification', handleNewNotification)
+
+    return () => {
+      socket.off('new_message', handleNewMessage)
+      socket.off('new_notification', handleNewNotification)
+    }
+  }, [user])
+
+  const clearUnreadNotifications = () => {
+    setUnreadNotificationsCount(0)
+  }
+
+  const clearUnreadMessages = () => {
+    setUnreadMessagesCount(0)
+  }
 
   const refreshSession = async () => {
     const refreshToken = getRefreshToken()
@@ -160,8 +219,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const value = useMemo(
-    () => ({ user, loading, error, login, register, logout, fetchCurrentUser, updateProfile, createExperience, createEducation }),
-    [user, loading, error]
+    () => ({
+      user,
+      loading,
+      error,
+      login,
+      register,
+      logout,
+      fetchCurrentUser,
+      updateProfile,
+      createExperience,
+      createEducation,
+      unreadNotificationsCount,
+      unreadMessagesCount,
+      clearUnreadNotifications,
+      clearUnreadMessages
+    }),
+    [user, loading, error, unreadNotificationsCount, unreadMessagesCount]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

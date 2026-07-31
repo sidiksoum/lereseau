@@ -12,6 +12,10 @@ export interface AuthContextType {
   updateProfile: (formData: FormData) => Promise<User>
   createExperience: (payload: Omit<UserExperience, 'id' | 'user_id'>) => Promise<UserExperience>
   createEducation: (payload: Omit<UserEducation, 'id' | 'user_id'>) => Promise<UserEducation>
+  unreadNotificationsCount: number
+  unreadMessagesCount: number
+  clearUnreadNotifications: () => void
+  clearUnreadMessages: () => void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)

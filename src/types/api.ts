@@ -292,3 +292,20 @@ export interface ConversationMessagesResponse {
   cursor?: string
   hasMore?: boolean
 }
+
+export interface AppNotification {
+  id: string
+  userId: string
+  type: string
+  message: string
+  data?: any
+  isRead: boolean
+  createdAt: string
+  senderDetails?: {
+    id: string
+    firstName: string
+    lastName: string
+    avatarUrl?: string
+  }
+}
+

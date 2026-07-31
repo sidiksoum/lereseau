@@ -11,7 +11,13 @@ export function Navbar({ isAuthenticated = false }) {
   const { theme, setTheme } = useTheme()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
 
-  const { user } = useAuth()
+  const {
+    user,
+    unreadNotificationsCount,
+    unreadMessagesCount,
+    clearUnreadNotifications,
+    clearUnreadMessages
+  } = useAuth()
   const profileName = user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : 'Utilisateur'
   const profileAvatar = user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profileName)}&background=cbd5e1&color=64748b`
 
@@ -68,11 +74,31 @@ export function Navbar({ isAuthenticated = false }) {
             <button onClick={() => setIsSearchOpen(true)} title="Recherche" className="md:hidden flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
               <Search className="h-[22px] w-[22px]" />
             </button>
-            <Link to="/notifications" title="Notifications" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <Link
+              to="/notifications"
+              onClick={clearUnreadNotifications}
+              title="Notifications"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
               <Bell className="h-[22px] w-[22px]" />
+              {unreadNotificationsCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900 animate-pulse">
+                  {unreadNotificationsCount}
+                </span>
+              )}
             </Link>
-            <Link to="/chat" title="Messages" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0">
+            <Link
+              to="/chat"
+              onClick={clearUnreadMessages}
+              title="Messages"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+            >
               <MessageSquare className="h-[22px] w-[22px]" />
+              {unreadMessagesCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900 animate-pulse">
+                  {unreadMessagesCount}
+                </span>
+              )}
             </Link>
             <Link to="/profile" title="Mon Profil" className="ml-1 h-10 w-10 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700 ring-2 ring-transparent hover:ring-blue-500 dark:hover:ring-blue-400 transition-all block shrink-0">
               <img src={profileAvatar} className="w-full h-full object-cover" alt="Me" />
