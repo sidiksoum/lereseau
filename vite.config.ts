@@ -15,7 +15,11 @@ export default defineConfig({
       },
     }),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       includeAssets: ['logo.png'],
       manifest: {
         name: "LeRéseau - Hub d'opportunités",
@@ -28,6 +32,10 @@ export default defineConfig({
           { src: '/logo.png', sizes: '192x192', type: 'image/png' },
           { src: '/logo.png', sizes: '512x512', type: 'image/png' }
         ]
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module'
       }
     })
   ],

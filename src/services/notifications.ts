@@ -21,3 +21,18 @@ export async function markAllAsRead(): Promise<{ ok: boolean }> {
     auth: true,
   })
 }
+
+export async function subscribePush(subscription: any): Promise<{ ok: boolean }> {
+  return apiRequest<{ ok: boolean }>('/api/notifications/subscribe', {
+    method: 'POST',
+    auth: true,
+    body: subscription,
+  })
+}
+
+export async function unsubscribePush(endpoint: string): Promise<{ ok: boolean }> {
+  return apiRequest<{ ok: boolean }>(`/api/notifications/unsubscribe?endpoint=${encodeURIComponent(endpoint)}`, {
+    method: 'POST',
+    auth: true,
+  })
+}

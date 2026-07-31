@@ -1,14 +1,74 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Bell, UserPlus, Heart, MessageCircle, Briefcase, Info } from "lucide-react"
-import { getNotifications, markAsRead, markAllAsRead } from "../../services/notifications"
+import { getNotifications, markAsRead, markAllAsRead, subscribePush, unsubscribePush } from "../../services/notifications"
 import type { AppNotification } from "../../types/api"
+
+const VAPID_PUBLIC_KEY = "BCqd9LIoVZbHi6yh5GAa4h24u59NUsD5sK2As6Bp-Hui78psNRDqcSCon12QJ6qruP1GJ-ck92SVXYJY6STB23k"
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/')
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
 
 export function NotificationsPage() {
   const navigate = useNavigate()
   const [notifications, setNotifications] = useState<AppNotification[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  const [pushSupported, setPushSupported] = useState(false)
+  const [pushEnabled, setPushEnabled] = useState(false)
+
+  const checkPushSubscription = async () => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      setPushSupported(true)
+      try {
+        const registration = await navigator.serviceWorker.ready
+        const subscription = await registration.pushManager.getSubscription()
+        setPushEnabled(!!subscription)
+      } catch (err) {
+        console.warn('Error checking push manager subscription:', err)
+      }
+    }
+  }
+
+  const handleTogglePush = async () => {
+    try {
+      const registration = await navigator.serviceWorker.ready
+      if (pushEnabled) {
+        const subscription = await registration.pushManager.getSubscription()
+        if (subscription) {
+          await subscription.unsubscribe()
+          await unsubscribePush(subscription.endpoint)
+        }
+        setPushEnabled(false)
+      } else {
+        const permission = await Notification.requestPermission()
+        if (permission !== 'granted') {
+          alert('Vous devez autoriser les notifications pour activer cette fonctionnalité.')
+          return
+        }
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        })
+        await subscribePush(subscription)
+        setPushEnabled(true)
+      }
+    } catch (err) {
+      console.error('Erreur de configuration Push:', err)
+      alert('Impossible d’activer les notifications sur cet appareil.')
+    }
+  }
 
   const loadNotifications = async () => {
     setLoading(true)
@@ -26,6 +86,7 @@ export function NotificationsPage() {
 
   useEffect(() => {
     loadNotifications()
+    checkPushSubscription()
   }, [])
 
   const handleMarkAllRead = async () => {
@@ -140,6 +201,28 @@ export function NotificationsPage() {
           Tout marquer comme lu
         </button>
       </div>
+
+      {pushSupported && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/80 gap-3">
+          <div className="flex items-center gap-3">
+            <Bell className={`h-6 w-6 shrink-0 ${pushEnabled ? 'text-emerald-500' : 'text-slate-400'}`} />
+            <div>
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Notifications de l'appareil</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Recevez des alertes système en temps réel sur cet appareil.</p>
+            </div>
+          </div>
+          <button
+            onClick={handleTogglePush}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+              pushEnabled
+                ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            {pushEnabled ? 'Désactiver' : 'Activer'}
+          </button>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm gap-4">
