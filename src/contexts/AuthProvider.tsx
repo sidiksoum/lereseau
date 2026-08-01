@@ -71,6 +71,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUnreadMessagesCount(0)
   }
 
+  const updateUnreadNotificationsCount = (count: number) => {
+    setUnreadNotificationsCount(count)
+  }
+
+  const updateUnreadMessagesCount = (count: number) => {
+    setUnreadMessagesCount(count)
+  }
+
   const refreshSession = async () => {
     const refreshToken = getRefreshToken()
     if (!refreshToken) {
@@ -233,7 +241,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unreadNotificationsCount,
       unreadMessagesCount,
       clearUnreadNotifications,
-      clearUnreadMessages
+      clearUnreadMessages,
+      updateUnreadNotificationsCount,
+      updateUnreadMessagesCount
     }),
     [user, loading, error, unreadNotificationsCount, unreadMessagesCount]
   )

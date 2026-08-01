@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Bell, UserPlus, Heart, MessageCircle, Briefcase, Info } from "lucide-react"
+import { useAuth } from "../../contexts/AuthContext"
 import { getNotifications, markAsRead, markAllAsRead, subscribePush, unsubscribePush } from "../../services/notifications"
 import type { AppNotification } from "../../types/api"
 
@@ -21,6 +22,7 @@ function urlBase64ToUint8Array(base64String: string) {
 
 export function NotificationsPage() {
   const navigate = useNavigate()
+  const { updateUnreadNotificationsCount } = useAuth()
   const [notifications, setNotifications] = useState<AppNotification[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -76,6 +78,7 @@ export function NotificationsPage() {
     try {
       const data = await getNotifications()
       setNotifications(data)
+      updateUnreadNotificationsCount(data.filter(n => !n.isRead).length)
     } catch (err) {
       console.error("Erreur lors du chargement des notifications:", err)
       setError("Impossible de charger les notifications. Veuillez réessayer.")
@@ -94,6 +97,7 @@ export function NotificationsPage() {
     try {
       await markAllAsRead()
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+      updateUnreadNotificationsCount(0)
     } catch (err) {
       console.error("Erreur lors du marquage de toutes les notifications:", err)
     }
@@ -103,9 +107,11 @@ export function NotificationsPage() {
     if (!notif.isRead) {
       try {
         await markAsRead(notif.id)
-        setNotifications(prev =>
-          prev.map(n => n.id === notif.id ? { ...n, isRead: true } : n)
-        )
+        setNotifications(prev => {
+          const next = prev.map(n => n.id === notif.id ? { ...n, isRead: true } : n)
+          updateUnreadNotificationsCount(next.filter(n => !n.isRead).length)
+          return next
+        })
       } catch (err) {
         console.error("Erreur lors du marquage comme lu:", err)
       }

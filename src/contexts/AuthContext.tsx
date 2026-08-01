@@ -16,6 +16,8 @@ export interface AuthContextType {
   unreadMessagesCount: number
   clearUnreadNotifications: () => void
   clearUnreadMessages: () => void
+  updateUnreadNotificationsCount: (count: number) => void
+  updateUnreadMessagesCount: (count: number) => void
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)

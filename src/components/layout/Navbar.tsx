@@ -76,7 +76,6 @@ export function Navbar({ isAuthenticated = false }) {
             </button>
             <Link
               to="/notifications"
-              onClick={clearUnreadNotifications}
               title="Notifications"
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
@@ -89,7 +88,6 @@ export function Navbar({ isAuthenticated = false }) {
             </Link>
             <Link
               to="/chat"
-              onClick={clearUnreadMessages}
               title="Messages"
               className="relative flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
             >

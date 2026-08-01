@@ -10,7 +10,7 @@ import { getSocket } from "../../services/socket"
 import type { ChatConversation, ChatMessage, SendMessagePayload, User as UserType } from "../../types/api"
 
 export function ChatPage() {
-  const { user: currentUser } = useAuth()
+  const { user: currentUser, updateUnreadMessagesCount } = useAuth()
   const [searchParams] = useSearchParams()
   const [conversations, setConversations] = useState<ChatConversation[]>([])
   const [friends, setFriends] = useState<UserType[]>([])
@@ -153,6 +153,8 @@ export function ChatPage() {
           // Si la conversation n'existe pas encore dans la liste, on la recharge entièrement
           loadConversationsAndFriends()
         }
+
+        updateUnreadMessagesCount(updatedConvs.reduce((sum, conv) => sum + (conv.myUnreadCount || 0), 0))
         return updatedConvs
       })
 
@@ -200,6 +202,7 @@ export function ChatPage() {
 
       const sortedConversations = sortConversationsByActivity(convs)
       setConversations(sortedConversations)
+      updateUnreadMessagesCount(sortedConversations.reduce((sum, conv) => sum + (conv.myUnreadCount || 0), 0))
 
       const friendsList = acceptedConnections
         .map(conn => conn.targetUser)
@@ -280,7 +283,16 @@ export function ChatPage() {
       // Le curseur représente l'ancienneté (createdAt du premier élément retourné)
       setMessagesCursor(response.cursor ?? (sortedMessages[0]?.createdAt ?? null))
       setMessagesHasMore(Boolean(response.hasMore))
-      setSelectedConversation(response.conversation)
+      const updatedConversation = {
+        ...response.conversation,
+        myUnreadCount: 0
+      }
+      setSelectedConversation(updatedConversation)
+      setConversations((prev) => {
+        const next = prev.map((conv) => conv.id === updatedConversation.id ? { ...conv, myUnreadCount: 0 } : conv)
+        updateUnreadMessagesCount(next.reduce((sum, conv) => sum + (conv.myUnreadCount || 0), 0))
+        return next
+      })
       setTimeout(() => scrollToBottom(), 50)
     } catch (error) {
       console.error('Erreur lors du chargement des messages:', error)
