@@ -1,6 +1,7 @@
 import { ArrowLeft, Download, FileText, ShoppingCart, Share2 } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
+import { useAuth } from "../../contexts/AuthContext"
 import { getDocument } from "../../services/documents"
 import type { Document } from "../../types/api"
 
@@ -75,15 +76,14 @@ export function DocumentDetailsPage() {
     language,
   } = document
 
-  const documentImageUrl = document.previewUrl || document.imageUrl || document.fileUrl || ''
-  const isPremium = document.isPremium
-  const userIsPremium = false
+  const { user } = useAuth()
+  const documentImageUrl = document.previewUrl || document.imageUrl || ''
+  const isPaid = Boolean(document.price)
+  const userIsPremium = Boolean(user?.isPremium)
   const tags = document.tags ?? []
 
   const handleAction = () => {
-    if (document.isPremium) {
-      navigate(`/library/checkout/${id}`)
-    } else {
+    if (document.fileUrl) {
       window.open(document.fileUrl, '_blank')
     }
   }
@@ -152,10 +152,9 @@ export function DocumentDetailsPage() {
                 </div>
 
                 <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <button onClick={handleAction} className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition ${document.isPremium ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-blue-600 text-white hover:bg-blue-700'
-                    }`}>
-                    {document.isPremium ? <ShoppingCart className="h-4 w-4" /> : <Download className="h-4 w-4" />}
-                    {document.isPremium ? `Acheter pour ${document.price} €` : 'Télécharger'}
+                  <button onClick={handleAction} disabled={!document.fileUrl} className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition ${isPaid ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-blue-600 text-white hover:bg-blue-700'} ${!document.fileUrl ? 'opacity-50 cursor-not-allowed hover:bg-current' : ''}`}>
+                    {isPaid ? <ShoppingCart className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                    {isPaid ? `Acheter pour ${document.price} €` : 'Télécharger'}
                   </button>
                   <button className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 px-5 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                     <Share2 className="h-4 w-4" />
@@ -225,7 +224,7 @@ export function DocumentDetailsPage() {
         </div>
 
         <div className="space-y-6">
-          {isPremium && !userIsPremium && (
+          {document.isPremium && !userIsPremium && (
             <div className="rounded-3xl border border-amber-200/80 bg-amber-50 p-6 shadow-sm dark:border-amber-900/30 dark:bg-amber-900/10">
               <h3 className="text-sm font-bold text-amber-800 dark:text-amber-300 mb-3">Premium disponible</h3>
               <p className="text-sm text-amber-700 dark:text-amber-200 mb-4">Ce document fait partie des contenus Premium. Passez à l'abonnement pour y accéder sans frais supplémentaires.</p>
@@ -256,11 +255,11 @@ export function DocumentDetailsPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span>Prix</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{document.isPremium ? `${document.price} €` : 'Gratuit'}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{isPaid ? `${document.price} €` : 'Gratuit'}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span>Accès</span>
-                <a href={document.fileUrl} target="_blank" rel="noreferrer" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">Voir le document</a>
+                <a href={document.fileUrl || '#'} target="_blank" rel="noreferrer" className={`font-semibold hover:underline dark:text-blue-400 ${document.fileUrl ? 'text-blue-600' : 'text-slate-400 pointer-events-none'}`}>{document.fileUrl ? 'Voir le document' : 'Aucun lien disponible'}</a>
               </div>
             </div>
           </div>

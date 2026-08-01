@@ -32,6 +32,8 @@ export function AdminCMSLibraryTab({ showToast }: { showToast: (msg: string, typ
   const [documentIsbn, setDocumentIsbn] = useState('')
   const [documentKeywords, setDocumentKeywords] = useState('')
   const [documentDescription, setDocumentDescription] = useState('')
+  const [documentAccessType, setDocumentAccessType] = useState<'FREE' | 'PREMIUM'>('FREE')
+  const [documentImageUrl, setDocumentImageUrl] = useState('')
   const [documentFile, setDocumentFile] = useState<File | null>(null)
   const [documentUrlString, setDocumentUrlString] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -70,6 +72,7 @@ export function AdminCMSLibraryTab({ showToast }: { showToast: (msg: string, typ
       const formData = new FormData()
       formData.append('title', documentTitle)
       formData.append('category', documentDomain)
+      formData.append('accessType', documentAccessType)
       if (documentPrice) formData.append('price', documentPrice)
       if (documentPages) formData.append('pagesCount', documentPages)
       formData.append('format', documentFormat)
@@ -78,12 +81,14 @@ export function AdminCMSLibraryTab({ showToast }: { showToast: (msg: string, typ
       if (documentPublisher) formData.append('publisher', documentPublisher)
       if (documentCourse) formData.append('associatedCourse', documentCourse)
       if (documentEdition) formData.append('edition', documentEdition)
-      if (documentIsbn) formData.append('isbn', documentIsbn)
+      if (documentIsbn) formData.append('referenceKey', documentIsbn)
       if (documentKeywords) formData.append('tags', documentKeywords)
       if (documentDescription) formData.append('description', documentDescription)
+      if (documentImageUrl) formData.append('imageUrl', documentImageUrl)
       if (documentFile) {
         formData.append('file', documentFile)
-      } else if (documentUrlString) {
+      }
+      if (documentUrlString) {
         formData.append('documentUrlString', documentUrlString)
       }
 
@@ -104,6 +109,8 @@ export function AdminCMSLibraryTab({ showToast }: { showToast: (msg: string, typ
       setDocumentIsbn('')
       setDocumentKeywords('')
       setDocumentDescription('')
+      setDocumentAccessType('FREE')
+      setDocumentImageUrl('')
       setDocumentFile(null)
       setDocumentUrlString('')
       
@@ -232,13 +239,27 @@ export function AdminCMSLibraryTab({ showToast }: { showToast: (msg: string, typ
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Fichier du document (Fichier optionnel)</label>
-              <Input type="file" accept=".pdf,.doc,.docx,.epub" onChange={(e) => setDocumentFile(e.target.files?.[0] || null)} />
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Type d'accès</label>
+              <select value={documentAccessType} onChange={(e) => setDocumentAccessType(e.target.value as 'FREE' | 'PREMIUM')} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:border-emerald-600 focus:ring-emerald-600 p-2.5 text-sm outline-none h-[42px]">
+                <option value="FREE">Gratuit (Accessible à tous)</option>
+                <option value="PREMIUM">Premium (Réservé aux membres Premium)</option>
+              </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">URL du document (Fallback optionnel)</label>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">URL de l'image de couverture (Optionnel)</label>
+              <Input type="url" value={documentImageUrl} onChange={(e) => setDocumentImageUrl(e.target.value)} placeholder="Ex: https://example.com/cover.jpg" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Importer une image de couverture (Optionnel)</label>
+              <Input type="file" accept="image/*" onChange={(e) => setDocumentFile(e.target.files?.[0] || null)} />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Ou lien vers le document (Drive, Dropbox...)</label>
               <Input type="url" value={documentUrlString} onChange={(e) => setDocumentUrlString(e.target.value)} placeholder="https://..." />
             </div>
           </div>

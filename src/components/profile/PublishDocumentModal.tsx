@@ -37,14 +37,13 @@ export function PublishDocumentModal({ isOpen, onClose, onSuccess }: PublishDocu
     const selected = e.target.files?.[0]
     if (selected) {
       setFile(selected)
-      setExternalUrl('') // Clear external URL if file is selected
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!file && !externalUrl.trim()) {
-      setError("Veuillez fournir un fichier PDF ou un lien externe valide.")
+    if (!externalUrl.trim()) {
+      setError("Veuillez fournir un lien externe vers le document.")
       return
     }
 
@@ -69,8 +68,9 @@ export function PublishDocumentModal({ isOpen, onClose, onSuccess }: PublishDocu
 
       if (file) {
         formData.append('file', file)
-      } else if (externalUrl.trim()) {
-        formData.append('documentUrlString', externalUrl.trim())
+      }
+      if (externalUrl.trim()) {
+        formData.append('externalUrl', externalUrl.trim())
       }
 
       await createPremiumDocument(formData)
@@ -270,20 +270,20 @@ export function PublishDocumentModal({ isOpen, onClose, onSuccess }: PublishDocu
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Source du document (Choisissez une option)</label>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Option 1: File Upload */}
+                {/* Option 1: Image de couverture */}
                 <div className={`border-2 rounded-xl p-4 transition-colors ${file ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700 border-dashed'}`}>
                   <input
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
-                    accept=".pdf,.doc,.docx"
+                    accept="image/*"
                     className="hidden"
                   />
 
                   {!file ? (
                     <div onClick={() => fileInputRef.current?.click()} className="text-center cursor-pointer py-4">
                       <Upload className="mx-auto h-6 w-6 text-slate-400 mb-2" />
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Importer un fichier (PDF, Word)</span>
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Importer une image de couverture</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-between">
@@ -317,13 +317,7 @@ export function PublishDocumentModal({ isOpen, onClose, onSuccess }: PublishDocu
                     <input
                       type="url"
                       value={externalUrl}
-                      onChange={(e) => {
-                        setExternalUrl(e.target.value)
-                        if (e.target.value) {
-                          setFile(null)
-                          if (fileInputRef.current) fileInputRef.current.value = ''
-                        }
-                      }}
+                      onChange={(e) => setExternalUrl(e.target.value)}
                       className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-2 text-sm outline-none focus:border-emerald-500"
                       placeholder="https://..."
                     />

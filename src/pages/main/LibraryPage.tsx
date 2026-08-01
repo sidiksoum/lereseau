@@ -116,9 +116,9 @@ export function LibraryPage() {
 
               {/* Image d'illustration PDF */}
               <div className="h-24 w-20 sm:h-32 sm:w-28 shrink-0 rounded-lg overflow-hidden border border-slate-200 relative bg-slate-100 group-hover:border-blue-300 transition-colors shadow-sm">
-                {doc.previewUrl || doc.imageUrl || doc.fileUrl ? (
+                {doc.previewUrl || doc.imageUrl ? (
                   <img
-                    src={doc.previewUrl || doc.imageUrl || doc.fileUrl || ''}
+                    src={doc.previewUrl || doc.imageUrl || ''}
                     alt={`Visuel de ${doc.title}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     onError={(e) => {
@@ -127,7 +127,7 @@ export function LibraryPage() {
                     }}
                   />
                 ) : null}
-                <div className={`fallback-icon flex h-full w-full items-center justify-center bg-slate-100 text-slate-400 ${(doc.previewUrl || doc.imageUrl || doc.fileUrl) ? 'hidden' : ''}`}>
+                <div className={`fallback-icon flex h-full w-full items-center justify-center bg-slate-100 text-slate-400 ${(doc.previewUrl || doc.imageUrl) ? 'hidden' : ''}`}>
                   <FileText className="h-6 w-6 text-blue-500" />
                 </div>
                 <div className="absolute top-0 right-0 p-1 bg-white/90 backdrop-blur-sm rounded-bl-lg shadow-sm border-b border-l border-white/50">
@@ -163,23 +163,27 @@ export function LibraryPage() {
 
             {/* Actions: Prix & Téléchargement / Achat */}
             <div className="px-5 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <span className={`text-sm font-bold ${doc.isPremium ? 'text-slate-900 dark:text-white bg-white border border-slate-200 px-2 py-1 rounded-md shadow-sm' : 'text-green-600 bg-green-50 px-2 py-1 rounded-md'}`}>
-                {doc.isPremium ? `${doc.price} €` : "Gratuit"}
-              </span>
-
-              {doc.isPremium ? (
-                <Link
-                  onClick={(e) => e.stopPropagation()}
-                  to={`/library/checkout/${doc.id}`}
-                  className="flex items-center gap-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold shadow-md hover:shadow-lg transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                >
-                  <ShoppingCart className="h-4 w-4" /> Acheter
-                </Link>
-              ) : (
-                <button onClick={(e) => e.stopPropagation()} className="flex items-center gap-2 text-sm bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2 rounded-lg font-bold transition-all shadow-sm">
-                  <Download className="h-4 w-4" /> Télécharger
-                </button>
-              )}
+              {(() => {
+                const priceLabel = doc.price ? `${doc.price} €` : 'Gratuit'
+                const isPaid = Boolean(doc.price)
+                return (
+                  <>
+                    <span className={`text-sm font-bold ${isPaid ? 'text-slate-900 dark:text-white bg-white border border-slate-200 px-2 py-1 rounded-md shadow-sm' : 'text-green-600 bg-green-50 px-2 py-1 rounded-md'}`}>
+                      {priceLabel}
+                    </span>
+                    <a
+                      href={doc.fileUrl || '#'}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => { if (!doc.fileUrl) e.preventDefault() }}
+                      className={`flex items-center gap-2 text-sm px-5 py-2 rounded-lg font-bold shadow-md transition-all ${doc.fileUrl ? (isPaid ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white') : 'bg-slate-200 text-slate-400 cursor-not-allowed hover:bg-slate-200'}`}
+                    >
+                      {isPaid ? <ShoppingCart className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                      {isPaid ? 'Acheter' : 'Télécharger'}
+                    </a>
+                  </>
+                )
+              })()}
             </div>
           </div>
         )) : (
