@@ -45,12 +45,12 @@ export function Navbar({ isAuthenticated = false }) {
 
         <Link to="/feed" className={`flex items-center hover:opacity-90 transition-opacity flex-shrink-0 ${isSearchOpen ? 'opacity-0 pointer-events-none' : ''}`}>
           <img
-            src="/logo-mobile.png"
+            src="/logo-lereseau.png"
             alt="LeRéseau"
             className="hidden md:block h-8 md:h-10 w-auto object-contain drop-shadow-sm dark:brightness-110"
           />
           <img
-            src="/logo-mobile.png"
+            src="/logo-lereseau.png"
             alt="LR"
             className="block md:hidden h-10 w-10 object-contain rounded-xl shadow-sm"
           />

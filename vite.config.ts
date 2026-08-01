@@ -20,7 +20,7 @@ export default defineConfig({
       filename: 'sw.ts',
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['logo.png'],
+      includeAssets: ['logo-lereseau.png'],
       manifest: {
         name: "LeRéseau - Hub d'opportunités",
         short_name: 'LeRéseau',
@@ -29,8 +29,8 @@ export default defineConfig({
         background_color: '#f8fafc',
         display: 'standalone',
         icons: [
-          { src: '/logo.png', sizes: '192x192', type: 'image/png' },
-          { src: '/logo.png', sizes: '512x512', type: 'image/png' }
+          { src: '/logo-lereseau.png', sizes: '192x192', type: 'image/png' },
+          { src: '/logo-lereseau.png', sizes: '512x512', type: 'image/png' }
         ]
       },
       devOptions: {
