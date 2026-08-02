@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { Button } from "../../components/ui/Button"
 import { BookOpen, Users, Brain, Star, ShieldCheck, GraduationCap, Pencil, Briefcase, Building, MessageCircle } from "lucide-react"
+import { FooterLinks } from "../../components/layout/Footer"
 
 export function LandingPage() {
   return (
@@ -254,6 +255,7 @@ export function LandingPage() {
           </Link>
         </div>
       </section>
+      <FooterLinks />
     </div>
   )
 }

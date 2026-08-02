@@ -124,7 +124,6 @@ export function MainLayout() {
 
       {/* Assistant IA Flottant visible sur toutes les pages de MainLayout */}
       <ChatbotWidget />
-      <FooterLinks />
     </div>
   )
 }
