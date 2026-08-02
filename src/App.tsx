@@ -8,6 +8,10 @@ import { RequireAdmin } from './components/auth/RequireAdmin'
 import { RequireGuest } from './components/auth/RequireGuest'
 
 import { LandingPage } from './pages/public/LandingPage'
+import { PrivacyPage } from './pages/public/PrivacyPage'
+import { TermsPage } from './pages/public/TermsPage'
+import { ContactPage } from './pages/public/ContactPage'
+import { AboutPage } from './pages/public/AboutPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
 import { VerifyEmailPage } from './pages/auth/VerifyEmailPage'
@@ -45,6 +49,22 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <LandingPage />
+      },
+      {
+        path: 'privacy',
+        element: <PrivacyPage />
+      },
+      {
+        path: 'terms',
+        element: <TermsPage />
+      },
+      {
+        path: 'contact',
+        element: <ContactPage />
+      },
+      {
+        path: 'about',
+        element: <AboutPage />
       }
     ]
   },

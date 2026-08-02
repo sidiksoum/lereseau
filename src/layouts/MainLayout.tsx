@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation } from "react-router-dom"
 import { Navbar } from "../components/layout/Navbar"
 import { Sidebar, MobileNav } from "../components/layout/Sidebar"
 import { Briefcase, ArrowRight, MessageSquare } from "lucide-react"
+import { FooterLinks } from "../components/layout/Footer"
 import { ChatbotWidget } from "../components/ui/ChatbotWidget"
 
 export function MainLayout() {
@@ -123,6 +124,7 @@ export function MainLayout() {
 
       {/* Assistant IA Flottant visible sur toutes les pages de MainLayout */}
       <ChatbotWidget />
+      <FooterLinks />
     </div>
   )
 }
