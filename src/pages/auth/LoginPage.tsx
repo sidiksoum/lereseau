@@ -21,7 +21,9 @@ export function LoginPage() {
       await login({ email, password })
       navigate('/feed', { replace: true })
     } catch (err: any) {
-      setError(err?.message || err?.detail || 'Impossible de se connecter. Vérifiez vos identifiants.')
+      console.error("[Login] Connection error caught in component:", err)
+      const message = err?.detail || err?.message || (typeof err === 'string' ? err : 'Impossible de se connecter. Vérifiez vos identifiants.')
+      setError(message)
     } finally {
       setIsSubmitting(false)
     }
@@ -32,10 +34,14 @@ export function LoginPage() {
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">De retour sur LeRéseau</h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Connectez-vous pour retrouver votre réseau</p>
+        {error && (
+          <div className="mt-4 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-sm text-red-600 dark:text-red-400 shadow-sm animate-in fade-in duration-200 text-left">
+            {error}
+          </div>
+        )}
       </div>
 
       <form className="space-y-4" onSubmit={handleLogin}>
-        {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
           <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="etudiant@ecole.ci" required />

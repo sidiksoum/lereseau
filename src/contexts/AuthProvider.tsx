@@ -133,7 +133,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (payload: LoginPayload) => {
-    setLoading(true)
     setError(null)
     console.log('[Auth] Attempting login with', payload.email)
 
@@ -165,13 +164,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('[Auth] Login error:', err)
       setError((err as Error).message || 'Erreur de connexion')
       throw err
-    } finally {
-      setLoading(false)
     }
   }
 
   const register = async (payload: RegisterPayload) => {
-    setLoading(true)
     setError(null)
 
     try {
@@ -180,8 +176,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       setError((err as Error).message || 'Erreur lors de l’inscription')
       throw err
-    } finally {
-      setLoading(false)
     }
   }
 
