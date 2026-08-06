@@ -36,7 +36,7 @@ export function RegisterPage() {
 
     try {
       const result = await registerUser({ email, firstName, lastName, phone, roleType, password })
-      
+
       setSuccess(result.detail || 'Compte créé. Un code a été envoyé.')
       setStep('VERIFY_OTP')
     } catch (err: any) {
@@ -53,7 +53,7 @@ export function RegisterPage() {
       setError('Veuillez entrer le code à 6 chiffres.')
       return
     }
-    
+
     setError(null)
     setIsSubmitting(true)
 
@@ -69,7 +69,7 @@ export function RegisterPage() {
 
   const handleResend = async () => {
     if (resendCooldown > 0) return
-    
+
     setError(null)
     setSuccess(null)
     setIsSubmitting(true)
@@ -99,7 +99,7 @@ export function RegisterPage() {
     const newCode = [...code]
     newCode[index] = value
     setCode(newCode)
-    
+
     if (value && index < 5) {
       const nextInput = document.getElementById(`register-code-${index + 1}`)
       nextInput?.focus()
@@ -209,12 +209,12 @@ export function RegisterPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex gap-3 mb-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-900/30">
-             <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-             <p className="text-sm text-slate-700 dark:text-slate-300">
-               Nous avons envoyé un code de vérification à <strong>{email}</strong>.
-             </p>
+            <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-slate-700 dark:text-slate-300">
+              Nous avons envoyé un code de vérification à <strong>{email}</strong>.
+            </p>
           </div>
-          
+
           <form onSubmit={handleVerify} className="space-y-6">
             {error && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
@@ -228,10 +228,10 @@ export function RegisterPage() {
             )}
             <div className="flex justify-between gap-2">
               {code.map((digit, i) => (
-                <input 
+                <input
                   key={i}
                   id={`register-code-${i}`}
-                  type="text" 
+                  type="text"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleCodeChange(i, e.target.value.replace(/\D/g, ''))}
@@ -242,8 +242,8 @@ export function RegisterPage() {
               ))}
             </div>
             <div className="flex justify-between items-center text-sm pt-2">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={handleResend}
                 disabled={resendCooldown > 0 || isSubmitting}
                 className="text-blue-600 hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
@@ -261,16 +261,16 @@ export function RegisterPage() {
       {step === 'SUCCESS' && (
         <div className="animate-in slide-in-from-bottom-4 duration-500 text-center py-6">
           <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
-             <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-500" />
+            <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-500" />
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Compte vérifié !</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">
             Votre adresse e-mail a été confirmée avec succès. Vous pouvez maintenant vous connecter à votre compte.
           </p>
           <Link to="/login">
-             <Button className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-bold">
-               Aller à la connexion
-             </Button>
+            <Button className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-bold">
+              Aller à la connexion
+            </Button>
           </Link>
         </div>
       )}

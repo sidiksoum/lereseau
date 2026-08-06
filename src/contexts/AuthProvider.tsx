@@ -141,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('[Auth] Login response:', response)
       setTokens(response.access_token, response.refresh_token)
       connectSocket(response.access_token, response.user?.id)
-      
+
       // Toujours récupérer les infos complètes de l'utilisateur
       console.log('[Auth] Fetching full user profile from /api/users/me')
       try {
